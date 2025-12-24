@@ -5,9 +5,7 @@ import logging
 from config import get_settings
 
 BUCKET_NAME = os.getenv("S3_BUCKET_NAME")
-
-def get_s3_client():
-    return boto3.client("s3")
+s3_client = boto3.client("s3")
 
 async def upload_resume_to_s3(lead_id: str, resume: UploadFile) -> str:
     """
