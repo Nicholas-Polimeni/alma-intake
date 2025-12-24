@@ -2,9 +2,13 @@ import boto3
 from botocore.exceptions import ClientError
 from fastapi import UploadFile
 import logging
-from config import get_settings
+import os
+from dotenv import load_dotenv
 
+load_dotenv()
 BUCKET_NAME = os.getenv("S3_BUCKET_NAME")
+if not BUCKET_NAME:
+    raise ValueError("S3_BUCKET_NAME environment variable is not set")
 s3_client = boto3.client("s3")
 
 async def upload_resume_to_s3(lead_id: str, resume: UploadFile) -> str:

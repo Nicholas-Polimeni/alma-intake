@@ -14,6 +14,7 @@ class Lead(BaseModel):
     last_name: str
     email: EmailStr
     resume_s3_key: str
+    resume_url: Optional[str] = None
     state: LeadState
     created_at: datetime
     updated_at: datetime

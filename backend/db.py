@@ -4,7 +4,7 @@ from interfaces import Lead, LeadState
 from datetime import datetime
 
 async def create_pool(db_url: str):
-    return asyncpg.create_pool(
+    return await asyncpg.create_pool(
         dsn=db_url,
         min_size=2,
         max_size=5,

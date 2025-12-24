@@ -8,7 +8,7 @@ from typing import Optional
 
 from interfaces import Lead, LeadState, LeadStateUpdate, LeadListResponse
 import db
-from s3_utils import upload_resume_to_s3
+from s3_utils import upload_resume_to_s3,generate_presigned_url
 from auth import verify_token
 
 logging.basicConfig(
@@ -96,3 +96,16 @@ async def update_state(
     
     logger.info(f"Lead {lead_id} updated to state {state_update.state}")
     return lead
+
+@app.get("/leads", response_model=LeadListResponse, tags=["Leads"])
+async def list_leads(
+    skip: int = Query(0, ge=0),
+    limit: int = Query(10, gt=0, le=100),
+    state: Optional[LeadState] = Query(None),
+    _: bool = Depends(verify_token)
+):
+    leads, total = await db.get_leads(app.state.db_pool, skip, limit, state)
+    for lead in leads:
+        if lead.resume_s3_key:
+            lead.resume_url = generate_presigned_url(lead.resume_s3_key)
+    return LeadListResponse(leads=leads, total=total, skip=skip, limit=limit)
